@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovaBank | Banking Management</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="logo">N</div>
+    <h1>NovaBank</h1>
+    <p class="muted">Banking Management System</p>
+
+    <form id="loginForm">
+      <label>Username</label>
+      <input id="username" required placeholder="Enter username" autocomplete="username">
+
+      <label>Password</label>
+      <input id="password" type="password" required placeholder="Enter password" autocomplete="current-password">
+
+      <button class="btn primary full">Sign In →</button>
+      <p id="loginError" class="error"></p>
+    </form>
+
+    <div class="login-hint">Demo credentials: Taruhsi / taru123</div>
+    <small>Educational Project · Demo Only</small>
+  </div>
+</div>
+
+<!-- APPLICATION -->
+<div id="app" class="app hidden">
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo small-logo">N</div>
+    <div><strong>NovaBank</strong><small>BANKING SYSTEM</small></div>
+  </div>
+
+  <div class="nav-title">WORKSPACE</div>
+  <button class="nav-item active" data-page="dashboard">▦ <span>Dashboard</span></button>
+  <button class="nav-item" data-page="customers">♙ <span>Customers</span></button>
+  <button class="nav-item" data-page="transactions">⇄ <span>Transactions</span></button>
+
+  <div class="nav-title">OPERATIONS</div>
+  <button class="nav-item" data-page="addCustomer">＋ <span>Open New Account</span></button>
+  <button class="nav-item" data-page="money">₹ <span>Deposit / Withdraw</span></button>
+
+  <div class="sidebar-footer">
+    <div class="avatar">T</div>
+    <div class="admin-info"><strong>Taruhsi</strong><small>Administrator</small></div>
+    <button id="logoutBtn" class="logout" title="Logout">↗</button>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div>
+      <span class="overline">NOVA FINANCIAL SERVICES</span>
+      <h2 id="pageTitle">Dashboard Overview</h2>
+    </div>
+    <div class="top-actions">
+      <span class="online"><i></i> System Online</span>
+      <div class="avatar">T</div>
+    </div>
+  </header>
+
+  <!-- DASHBOARD -->
+  <section id="dashboardPage" class="page">
+    <div class="hero">
+      <div>
+        <span class="hero-tag">YOUR BANKING COMMAND CENTER</span>
+        <h1>Welcome back, Taruhsi! 👋</h1>
+        <p>Here is your bank's performance at a glance.</p>
+        <button class="btn hero-btn" data-go="addCustomer">＋ Create New Account</button>
+      </div>
+      <div class="hero-symbol">✦</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-top"><span>Total Bank Balance</span><span class="stat-icon blue">₹</span></div>
+        <h2 id="totalBalance">₹0</h2>
+        <p>Combined customer balances</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span>Total Customers</span><span class="stat-icon purple">♙</span></div>
+        <h2 id="totalCustomers">0</h2>
+        <p>Registered accounts</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span>Total Deposits</span><span class="stat-icon green">↗</span></div>
+        <h2 id="totalDeposits">₹0</h2>
+        <p>Recorded deposits</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><span>Total Withdrawals</span><span class="stat-icon orange">↙</span></div>
+        <h2 id="totalWithdrawals">₹0</h2>
+        <p>Recorded withdrawals</p>
+      </div>
+    </div>
+
+    <div class="two-columns">
+      <div class="panel">
+        <div class="panel-heading">
+          <div><h3>Financial Activity</h3><p>Deposit and withdrawal overview</p></div>
+          <span class="badge">ALL TIME</span>
+        </div>
+        <div class="chart-container"><canvas id="activityChart"></canvas></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading"><div><h3>Quick Actions</h3><p>Manage banking operations</p></div></div>
+        <button class="quick-action" data-go="addCustomer"><span class="quick-icon purple-bg">＋</span><span><strong>New Customer</strong><small>Register a bank account</small></span><b>›</b></button>
+        <button class="quick-action" data-go="money"><span class="quick-icon green-bg">↗</span><span><strong>Deposit Money</strong><small>Add funds to an account</small></span><b>›</b></button>
+        <button class="quick-action" data-go="money"><span class="quick-icon orange-bg">↙</span><span><strong>Withdraw Money</strong><small>Process a withdrawal</small></span><b>›</b></button>
+        <button class="quick-action" data-go="customers"><span class="quick-icon blue-bg">♙</span><span><strong>View Customers</strong><small>Manage customer records</small></span><b>›</b></button>
+      </div>
+    </div>
+
+    <div class="panel table-panel">
+      <div class="panel-heading">
+        <div><h3>Recent Transactions</h3><p>Latest banking activity</p></div>
+        <button class="text-button" data-go="transactions">View all →</button>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>TRANSACTION</th><th>CUSTOMER</th><th>ACCOUNT</th><th>DATE</th><th>AMOUNT</th><th>STATUS</th></tr></thead>
+          <tbody id="recentTransactions"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMERS -->
+  <section id="customersPage" class="page hidden">
+    <div class="page-intro"><h2>Customer Management</h2><p>View, search and manage registered customers.</p></div>
+    <div class="panel table-panel">
+      <div class="toolbar">
+        <input id="customerSearch" placeholder="🔍 Search customer or account...">
+        <button class="btn primary" data-go="addCustomer">＋ New Customer</button>
+      </div>
+      <div class="table-scroll">
+        <table><thead><tr><th>ACCOUNT</th><th>CUSTOMER</th><th>EMAIL</th><th>PHONE</th><th>BALANCE</th><th>ACTION</th></tr></thead>
+        <tbody id="customersTable"></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRANSACTIONS -->
+  <section id="transactionsPage" class="page hidden">
+    <div class="page-intro"><h2>Transaction History</h2><p>Review deposits and withdrawals recorded in the system.</p></div>
+    <div class="panel table-panel">
+      <div class="toolbar">
+        <input id="transactionSearch" placeholder="🔍 Search transaction or customer...">
+        <button id="exportBtn" class="btn secondary">↓ Export CSV</button>
+      </div>
+      <div class="table-scroll">
+        <table><thead><tr><th>TRANSACTION ID</th><th>CUSTOMER</th><th>ACCOUNT</th><th>TYPE</th><th>DATE</th><th>AMOUNT</th><th>STATUS</th></tr></thead>
+        <tbody id="transactionsTable"></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATE CUSTOMER -->
+  <section id="addCustomerPage" class="page hidden">
+    <div class="page-intro"><h2>Open a New Account</h2><p>Register customer details and create an account.</p></div>
+    <div class="panel form-panel">
+      <div class="form-heading"><div class="form-symbol">♙</div><div><h3>Customer Information</h3><p>Enter the details below.</p></div></div>
+      <form id="customerForm" class="form-grid">
+        <div class="field"><label>Full Name *</label><input id="customerName" required maxlength="80" placeholder="Customer full name"></div>
+        <div class="field"><label>Email Address</label><input id="customerEmail" type="email" maxlength="120" placeholder="customer@example.com"></div>
+        <div class="field"><label>Phone Number *</label><input id="customerPhone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit phone number"></div>
+        <div class="field"><label>Account Type</label><select id="accountType"><option>Savings</option><option>Current</option><option>Student</option></select></div>
+        <div class="field full-field"><label>Opening Balance (₹) *</label><input id="openingBalance" type="number" min="0" max="100000000" step="0.01" value="0" required></div>
+        <div class="form-actions full-field"><button type="reset" class="btn secondary">Clear Form</button><button class="btn primary">Create Account →</button></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- MONEY OPERATIONS -->
+  <section id="moneyPage" class="page hidden">
+    <div class="page-intro"><h2>Deposit & Withdrawal</h2><p>Process transactions for registered demo accounts.</p></div>
+    <div class="money-layout">
+      <div class="panel form-panel">
+        <div class="form-heading"><div class="form-symbol">₹</div><div><h3>Process Transaction</h3><p>Enter the transaction details.</p></div></div>
+        <form id="transactionForm">
+          <div class="field"><label>Select Customer *</label><select id="transactionAccount" required><option value="">Choose an account</option></select></div>
+          <div class="field"><label>Transaction Type *</label><select id="transactionType"><option value="Deposit">Deposit</option><option value="Withdrawal">Withdrawal</option></select></div>
+          <div class="field"><label>Amount (₹) *</label><input id="transactionAmount" type="number" min="0.01" max="100000000" step="0.01" required placeholder="Enter amount"></div>
+          <div class="field"><label>Description</label><input id="transactionNote" maxlength="100" placeholder="e.g. Cash deposit"></div>
+          <button class="btn primary full">Confirm Transaction →</button>
+        </form>
+        <p class="notice">Educational demo only. No real money is moved.</p>
+      </div>
+      <div class="balance-card">
+        <span class="balance-star">✦</span><span class="hero-tag">NOVA BANKING</span>
+        <h2>Smart banking.<br>Simple management.</h2>
+        <p>Keep track of customer accounts and recorded activity in one place.</p>
+        <div class="balance-divider"></div>
+        <small>TOTAL CUSTOMER BALANCE</small>
+        <h1 id="moneyTotalBalance">₹0</h1>
+        <small id="moneyAccountCount">0 registered accounts</small>
+      </div>
+    </div>
+  </section>
+
+  <footer>© 2026 NovaBank · College Project · Banking Simulator</footer>
+</main>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="script.js"></script>
+</body>
+          </html>
